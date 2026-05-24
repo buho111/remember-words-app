@@ -187,7 +187,7 @@ export function InputWord() {
   // loadData
   // ---------------------------
   const loadData = useCallback(() => {
-    const saved = localStorage.getItem("configData");
+    const saved = localStorage.getItem("configWordsData");
     if (saved) {
       const parsedData: ConfigItem[] = JSON.parse(saved);
       setData(parsedData);

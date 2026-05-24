@@ -13,7 +13,7 @@ export function FourChoice() {
   }, []);
 
   const loadData = () => {
-    const saved = localStorage.getItem("configData");
+    const saved = localStorage.getItem("configWordsData");
     if (saved) {
       const parsedData: ConfigItem[] = JSON.parse(saved);
       setData(parsedData);
