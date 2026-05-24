@@ -5,17 +5,17 @@ export function ConfigPage() {
   const defaultData: ConfigItem[] = [];
 
   const [data, setData] = useState<ConfigItem[]>(() => {
-    const saved = localStorage.getItem("configData");
+    const saved = localStorage.getItem("configWordsData");
     return saved ? JSON.parse(saved) : defaultData;
   });
 
   const saveData = (data: ConfigItem[]) => {
-    localStorage.setItem("configData", JSON.stringify(data));
+    localStorage.setItem("configWordsData", JSON.stringify(data));
     setData(data);
   };
 
   const clearData = () => {
-    localStorage.removeItem("configData");
+    localStorage.removeItem("configWordsData");
     setData(defaultData);
     // Reset file input
     (document.getElementById("json-upload") as HTMLInputElement).value = "";
