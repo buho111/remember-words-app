@@ -34,6 +34,7 @@ export function FourChoice() {
     setResult("");
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const saved = localStorage.getItem("configWordsData");
     if (saved) {
@@ -55,7 +56,6 @@ export function FourChoice() {
       setData(parsedData);
       selectRandom(parsedData);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSelectAndAnswer = (word: string) => {
