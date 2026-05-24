@@ -7,19 +7,8 @@ export function FourChoice() {
   const [options, setOptions] = useState<ConfigItem[]>([]);
   const [selectedName, setSelectedName] = useState<string>("");
   const [result, setResult] = useState<string>("");
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = () => {
-    const saved = localStorage.getItem("configWordsData");
-    if (saved) {
-      const parsedData: ConfigItem[] = JSON.parse(saved);
-      setData(parsedData);
-      selectRandom(parsedData);
-    }
-  };
+  // 答え
+  const [answer, setAnswer] = useState<string>("");
 
   const selectRandom = (items: ConfigItem[]) => {
     if (items.length === 0) return;
@@ -45,12 +34,38 @@ export function FourChoice() {
     setResult("");
   };
 
+  useEffect(() => {
+    const saved = localStorage.getItem("configWordsData");
+    if (saved) {
+      let parsedData: ConfigItem[] = JSON.parse(saved);
+      
+      // Check if range settings exist
+      const rangeStart = localStorage.getItem("configWordsDataRangeStart");
+      const rangeEnd = localStorage.getItem("configWordsDataRangeEnd");
+      
+      // Filter data by range if range settings exist
+      if (rangeStart && rangeEnd) {
+        const start = parseInt(rangeStart, 10);
+        const end = parseInt(rangeEnd, 10);
+        parsedData = parsedData.filter(
+          (item) => item.no >= start && item.no <= end
+        );
+      }
+      
+      setData(parsedData);
+      selectRandom(parsedData);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleSelectAndAnswer = (word: string) => {
     setSelectedName(word);
     if (selectedItem && word === selectedItem.word) {
       setResult("正解！");
+      setAnswer("");
     } else {
       setResult("間違い");
+      setAnswer(`答え: ${selectedItem?.word}`);
     }
   };
 
@@ -59,52 +74,74 @@ export function FourChoice() {
   };
 
   return (
-    <div className="px-8 py-4 max-w-4xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6 text-center text-pink-500 drop-shadow-md">
+    <div 
+      className="px-8 py-4 max-w-4xl mx-auto pt-20"
+      style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 25%, #1e1b4b 50%, #0f172a 75%, #1e3a8a 100%)',
+        backgroundAttachment: 'fixed',
+      }}
+    >
+      <h2 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent drop-shadow-lg">
         {selectedItem ? "単語クイズ" : "データがありません"}
       </h2>
       {selectedItem && (
         <div className="flex flex-col items-center">
-          <div className="bg-white bg-opacity-70 rounded-lg shadow-lg p-4 mb-6">
+          <div className="bg-gradient-to-br from-blue-900 to-purple-900 bg-opacity-50 rounded-2xl p-6 mb-8 border border-blue-500 border-opacity-30 backdrop-blur-sm shadow-2xl">
             <div
               style={{
                 width: 300,
                 height: 300,
                 overflow: "hidden",
-                borderRadius: "8px",
+                borderRadius: "12px",
+                background: "rgba(15, 23, 42, 0.8)",
+                border: "2px solid rgba(96, 165, 250, 0.3)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "1rem",
               }}
             >
-                {selectedItem.meaning}
+                <p className="text-blue-300 font-semibold text-center">{selectedItem.meaning}</p>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            {options.map((nameInfo, index) => (
+          <div className="grid grid-cols-2 gap-4 mb-8">
+            {options.map((nameInfo) => (
               <button
-                key={index}
+                type="button"
+                key={nameInfo.word}
                 onClick={() => handleSelectAndAnswer(nameInfo.word)}
-                className={`px-4 py-2 bg-white bg-opacity-70 rounded-lg shadow-lg hover:shadow-xl transition leading-tight ${
+                className={`px-6 py-3 rounded-xl transition-all leading-tight font-bold shadow-lg transform hover:scale-105 ${
                   selectedName === nameInfo.word
-                    ? "border-4 border-pink-500 text-gray-800 bg-pink-100"
-                    : "border-4 border-blue-200 text-gray-700"
+                    ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white border-2 border-purple-300 shadow-2xl"
+                    : "bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-2 border-blue-400 hover:shadow-xl"
                 }`}
               >
                 {nameInfo.word}
               </button>
             ))}
           </div>
-          <div className="flex gap-4">
+          <div className="flex gap-6">
             <button
+              type="button"
               onClick={handleNext}
-              className="bg-white text-gray-800 px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition transform hover:scale-105 font-semibold border-4 border-blue-200"
+              className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition transform hover:scale-105 font-bold border-2 border-green-400 border-opacity-50"
             >
               次へ
             </button>
           </div>
           {result && (
             <p
-              className={`mt-4 text-xl font-bold ${result === "正解！" ? "text-green-600" : "text-red-600"}`}
+              className={`mt-6 text-2xl font-bold ${result === "正解！" ? "text-green-400 drop-shadow-lg" : "text-red-400 drop-shadow-lg"}`}
             >
               {result}
+            </p>
+          )}
+          {answer && (
+            <p
+              className={`mt-4 text-lg font-bold text-purple-400 drop-shadow-md`}
+            >
+              {answer}
             </p>
           )}
         </div>
