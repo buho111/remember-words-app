@@ -1,0 +1,379 @@
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { ConfigItem } from "../../types";
+
+type questionData = {
+  correctWord: string;
+  correctMeaning: string;
+  incorrectWords: string[];
+};
+
+const NUMBER_OF_OPTIONS = 4;
+const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toLowerCase();
+const HIRAGANA =
+  "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽ";
+
+export function InputWord() {
+  // データ全体
+  const [data, setData] = useState<ConfigItem[]>([]);
+  // 問題の情報
+  const [questionData, setQuestionData] = useState<questionData | null>(null);
+  // 選択肢の文字列リスト（カナ or 名前）
+  const [result, setResult] = useState<string>("");
+  // 答え
+  const [answer, setAnswer] = useState<string>("");
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const nextButtonRef = useRef<HTMLButtonElement>(null);
+
+  // ---------------------------
+  // randomChar
+  // ---------------------------
+  const randomChar = useCallback(
+    (
+      isAlphabetOnly: boolean,
+      isHiraganaOnly: boolean,
+      prohibitedChars: string[] = [],
+    ) => {
+      let chars: string;
+      if (isAlphabetOnly) {
+        chars = ALPHABET;
+      } else if (isHiraganaOnly) {
+        chars = HIRAGANA;
+      } else {
+        chars = ALPHABET + HIRAGANA;
+      }
+
+      let char: string;
+      do {
+        char = chars[Math.floor(Math.random() * chars.length)];
+      } while (prohibitedChars.includes(char));
+
+      return char;
+    },
+    [],
+  );
+
+  const randomItems = useCallback((array: ConfigItem[], num: number) => {
+    var a = array;
+    var t: ConfigItem[] = [];
+    var r = [];
+    var l = a.length;
+    var n = num < l ? num : l;
+    while (n-- > 0) {
+      const i = (Math.random() * l) | 0;
+      r[n] = t[i] || a[i];
+      --l;
+      t[i] = t[l] || a[l];
+    }
+    return r;
+  }, []);
+
+  // ---------------------------
+  // selectRandom
+  // ---------------------------
+  const selectRandom = useCallback(
+    (items: ConfigItem[]): questionData => {
+      if (items.length === 0)
+        throw new Error("selectRandom: items array is empty");
+
+      const randomItemsResult = randomItems(items, NUMBER_OF_OPTIONS);
+
+      const incorrectWords = randomItemsResult.slice(1).map((item) => {
+        return item.word.replace(/\s/g, "");
+      });
+
+      return {
+        correctWord: randomItemsResult[0].word,
+        correctMeaning: randomItemsResult[0].meaning,
+        incorrectWords: incorrectWords,
+      };
+    },
+    [randomItems],
+  );
+
+  /**
+   * getUsableString
+   * @param prohibitedStrings 利用禁止文字列。N文字目が同じ文字にならないようにする
+          : randomItemsResult[0].name,
+        incorrectWords: incorrectWords,
+      };
+    },
+    [randomItems],
+  );
+
+  /**
+   * getUsableString
+   * @param prohibitedStrings 利用禁止文字列。N文字目が同じ文字にならないようにする
+   * @param targetStr
+   * @param length
+   * @param isAlphabetOnly
+   * @returns
+   */
+  const getUsableString = useCallback(
+    (
+      prohibitedStrings: string[],
+      targetStr: string,
+      length: number,
+      isAlphabetOnly: boolean,
+      isHiraganaOnly: boolean,
+    ): string => {
+      const returnStr: string[] = [];
+      const randomChars =
+        length > targetStr.length
+          ? Array.from({ length: length - targetStr.length }, () =>
+              randomChar(isAlphabetOnly, isHiraganaOnly),
+            ).join("")
+          : "";
+      const adjustedStr =
+        targetStr.length > length
+          ? targetStr.slice(0, length)
+          : targetStr + randomChars;
+
+      let index = 0;
+      for (const char of adjustedStr) {
+        const prohibitedChars = prohibitedStrings.map((prohibited) => {
+          return prohibited.charAt(index) || "";
+        });
+
+        if (prohibitedChars.includes(char)) {
+          returnStr.push(
+            randomChar(isAlphabetOnly, isHiraganaOnly, prohibitedChars),
+          );
+        } else {
+          returnStr.push(char);
+        }
+        index += 1;
+      }
+      return returnStr.join("");
+    },
+    [randomChar],
+  );
+
+  /**
+   * createQuestionData
+   * @param str
+   * @param targetLength
+   * @returns
+   */
+  const createQuestionData = useCallback(
+    (parseData: ConfigItem[]): questionData => {
+      const baseQuestionData = selectRandom(parseData);
+      const prohibitedStrings = [baseQuestionData.correctWord];
+      const incorrectWords: string[] = [];
+      const isAlphabetOnly = /^[a-zA-Z]+$/.test(baseQuestionData.correctWord);
+      const isHiraganaOnly = /^[ぁ-ゖ]+$/.test(baseQuestionData.correctWord);
+
+      baseQuestionData.incorrectWords.forEach((word) => {
+        const adjustedWord = getUsableString(
+          prohibitedStrings,
+          word,
+          baseQuestionData.correctWord.length,
+          isAlphabetOnly,
+          isHiraganaOnly,
+        );
+        prohibitedStrings.push(adjustedWord);
+        incorrectWords.push(adjustedWord);
+      });
+
+      return {
+        correctWord: baseQuestionData.correctWord,
+        correctMeaning: baseQuestionData.correctMeaning,
+        incorrectWords: incorrectWords,
+      };
+    },
+    [selectRandom, getUsableString],
+  );
+
+  // ---------------------------
+  // loadData
+  // ---------------------------
+  const loadData = useCallback(() => {
+    const saved = localStorage.getItem("configData");
+    if (saved) {
+      const parsedData: ConfigItem[] = JSON.parse(saved);
+      setData(parsedData);
+      return parsedData;
+    }
+  }, []);
+
+  const getShuffledStrings = (questionData: questionData): string[] => {
+    // 正解と不正解を1つの配列に結合
+    const allStrings = [
+      questionData.correctWord,
+      ...questionData.incorrectWords,
+    ];
+    // ランダムに並び替え
+    return allStrings.sort(() => Math.random() - 0.5);
+  };
+
+  useEffect(() => {
+    const parsedData = loadData();
+    setData(parsedData || []);
+  }, [loadData]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (data.length === 0) {
+      return;
+    }
+    const questionData = createQuestionData(data);
+    setQuestionData(questionData);
+  }, [data, createQuestionData]);
+
+  // ---------------------------
+  // handleChoiceClick
+  // ---------------------------
+  const handleChoiceClick = (
+    str: string,
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    if (!questionData) return;
+
+    // 現在のインデックス位置の文字が正解文字列と一致するか判定
+    const clickedChar = str.charAt(currentIndex);
+    const expectedChar = questionData.correctWord.charAt(currentIndex);
+
+    // フォーカスを外して次へボタンにフォーカスを当てる
+    (event.currentTarget as HTMLButtonElement).blur();
+    // より長い遅延を設定
+    setTimeout(() => {
+      nextButtonRef.current?.focus();
+    }, 100);
+
+    if (clickedChar === expectedChar) {
+      setCurrentIndex((prev) => {
+        const newIndex = prev + 1;
+        if (newIndex === questionData.correctWord.length) {
+          setResult("正解！");
+        }
+        return newIndex;
+      });
+    } else {
+      setResult("不正解！");
+      setAnswer(`答え: ${questionData.correctWord}`);
+      setCurrentIndex(Infinity);
+    }
+  };
+
+  // ---------------------------
+  // handleNext
+  // ---------------------------
+  const handleNext = () => {
+    setResult("");
+    setAnswer("");
+    const questionData = createQuestionData(data);
+    console.log("new questionData:", questionData);
+    setQuestionData(questionData);
+    setCurrentIndex(0);
+    // 次へボタンにフォーカスを当てる
+    if (nextButtonRef.current) {
+      nextButtonRef.current.focus();
+    }
+  };
+
+  const handleShowAnswer = () => {
+    if (questionData) {
+      setAnswer(`答え: ${questionData.correctWord}`);
+    }
+  };
+
+  return (
+    <div className="px-8 py-4 max-w-4xl mx-auto">
+      <h2 className="text-2xl font-bold mb-6 text-center text-pink-500 drop-shadow-md">
+        {questionData ? "👀 だれでしょう ❓" : "データがありません"}
+      </h2>
+      {questionData && (
+        <div className="flex flex-col items-center">
+          <div className="bg-white bg-opacity-70 rounded-lg p-4 mb-6">
+            <div
+              style={{
+                width: 300,
+                height: 300,
+                overflow: "hidden",
+                borderRadius: "8px",
+              }}
+            >
+            {questionData.correctMeaning}
+            </div>
+          </div>
+          <div className="flex flex-wrap justify-center gap-4 mb-6">
+            {getShuffledStrings(questionData)
+              .filter((str) => str.charAt(currentIndex))
+              .map((str) => (
+                <button
+                  type="button"
+                  key={str}
+                  onClick={(e) => handleChoiceClick(str, e)}
+                  onTouchEnd={(e) =>
+                    (e.currentTarget as HTMLButtonElement).blur()
+                  }
+                  tabIndex={-1}
+                  className="px-4 py-2 bg-white bg-opacity-70 rounded-lg transition leading-tight text-gray-700"
+                  style={{
+                    WebkitTapHighlightColor: "transparent",
+                    WebkitUserSelect: "none",
+                    userSelect: "none",
+                    outline: "none",
+                    boxShadow: "none",
+                    border: "none",
+                  }}
+                  onBlur={(e) => e.currentTarget.blur()}
+                >
+                  {str.charAt(currentIndex)}
+                </button>
+              ))}
+          </div>
+          <div className="flex gap-4">
+            <button
+              ref={nextButtonRef}
+              type="button"
+              onClick={handleNext}
+              onTouchEnd={(e) => (e.currentTarget as HTMLButtonElement).blur()}
+              className="bg-white text-gray-800 px-8 py-4 rounded-full transition transform hover:scale-105 font-semibold border-4 border-blue-200"
+              style={{
+                WebkitTapHighlightColor: "transparent",
+                WebkitUserSelect: "none",
+                userSelect: "none",
+                outline: "none",
+                boxShadow: "none",
+              }}
+              onBlur={(e) => e.currentTarget.blur()}
+            >
+              次へ
+            </button>
+            <button
+              type="button"
+              onClick={handleShowAnswer}
+              onTouchEnd={(e) => (e.currentTarget as HTMLButtonElement).blur()}
+              tabIndex={-1}
+              className="bg-white text-gray-800 px-8 py-4 rounded-full transition transform hover:scale-105 font-semibold border-4 border-green-200"
+              style={{
+                WebkitTapHighlightColor: "transparent",
+                WebkitUserSelect: "none",
+                userSelect: "none",
+                outline: "none",
+                boxShadow: "none",
+              }}
+              onBlur={(e) => e.currentTarget.blur()}
+            >
+              答え
+            </button>
+          </div>
+          {result && (
+            <p
+              className={`mt-4 text-xl font-bold ${result === "正解！" ? "text-green-600" : "text-red-600"}`}
+            >
+              {result}
+            </p>
+          )}
+          {answer && (
+            <p
+              className={`mt-4 text-lg font-bold text-purple-500 drop-shadow-md`}
+            >
+              {answer}
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
