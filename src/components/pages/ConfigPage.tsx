@@ -42,7 +42,7 @@ export function ConfigPage() {
           } else {
             alert("無効なJSON形式です。");
           }
-        } catch (error) {
+        } catch (_err) {
           alert("JSONのパースに失敗しました。");
         }
       };
@@ -58,8 +58,10 @@ export function ConfigPage() {
 
   return (
     <div style={{ padding: 20, paddingTop: 80 }}>
-      <p className="text-lg font-semibold mb-4">単語一覧を登録してください</p>
-      <div className="mb-4 flex gap-2">
+      <p className="text-2xl font-bold mb-8 text-center bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+        単語一覧を登録してください
+      </p>
+      <div className="mb-6 flex gap-3">
         <input
           type="file"
           accept=".json"
@@ -68,14 +70,16 @@ export function ConfigPage() {
           id="json-upload"
         />
         <button
+          type="button"
           onClick={handleUploadClick}
-          className="bg-white text-gray-800 px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition transform hover:scale-105 font-semibold border-4 border-purple-200"
+          className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition transform hover:scale-105 font-bold border-2 border-purple-400 border-opacity-50"
         >
           JSONアップロード
         </button>
         <button
+          type="button"
           onClick={clearData}
-          className="bg-white text-gray-800 px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition transform hover:scale-105 font-semibold border-4 border-red-200"
+          className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition transform hover:scale-105 font-bold border-2 border-red-400 border-opacity-50"
         >
           クリア
         </button>
@@ -84,21 +88,21 @@ export function ConfigPage() {
         {data.map((item) => (
           <div
             key={item.no}
-            className="bg-white bg-opacity-70 rounded-lg shadow-lg p-4 hover:shadow-xl transition"
+            className="bg-gradient-to-br from-blue-900 to-purple-900 bg-opacity-50 rounded-xl shadow-lg p-4 hover:shadow-xl transition border border-blue-500 border-opacity-30 backdrop-blur-sm"
           >
-            <div className="flex items-center mb-2">
-              <span className="font-bold text-gray-600 mr-2">#{item.no}</span>
+            <div className="flex items-center mb-3">
+              <span className="font-bold text-blue-400 mr-2">#{item.no}</span>
             </div>
             <div className="mb-4">
               <input
                 defaultValue={item.word}
-                className="mt-2 w-full border border-gray-300 rounded px-2 py-1 text-sm"
+                className="mt-2 w-full bg-slate-800 border border-blue-400 border-opacity-30 rounded px-3 py-2 text-sm text-blue-300 placeholder-blue-600 focus:outline-none focus:border-blue-300 transition"
                 placeholder="単語"
               />
             </div>
             <input
               defaultValue={item.meaning}
-              className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
+              className="w-full bg-slate-800 border border-blue-400 border-opacity-30 rounded px-3 py-2 text-sm text-blue-300 placeholder-blue-600 focus:outline-none focus:border-blue-300 transition"
               placeholder="意味"
             />
           </div>

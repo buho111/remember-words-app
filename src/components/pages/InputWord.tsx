@@ -277,25 +277,31 @@ export function InputWord() {
   };
 
   return (
-    <div className="px-8 py-4 max-w-4xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6 text-center text-pink-500 drop-shadow-md">
-        {questionData ? "👀 だれでしょう ❓" : "データがありません"}
+    <div className="px-8 py-4 max-w-4xl mx-auto pt-20">
+      <h2 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent drop-shadow-lg">
+        {questionData ? "単語クイズ" : "データがありません"}
       </h2>
       {questionData && (
         <div className="flex flex-col items-center">
-          <div className="bg-white bg-opacity-70 rounded-lg p-4 mb-6">
+          <div className="bg-gradient-to-br from-blue-900 to-purple-900 bg-opacity-50 rounded-2xl p-6 mb-8 border border-blue-500 border-opacity-30 backdrop-blur-sm shadow-2xl">
             <div
               style={{
                 width: 300,
                 height: 300,
                 overflow: "hidden",
-                borderRadius: "8px",
+                borderRadius: "12px",
+                background: "rgba(15, 23, 42, 0.8)",
+                border: "2px solid rgba(96, 165, 250, 0.3)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "1rem",
               }}
             >
-            {questionData.correctMeaning}
+            <p className="text-blue-300 font-semibold text-center">{questionData.correctMeaning}</p>
             </div>
           </div>
-          <div className="flex flex-wrap justify-center gap-4 mb-6">
+          <div className="flex flex-wrap justify-center gap-4 mb-8">
             {getShuffledStrings(questionData)
               .filter((str) => str.charAt(currentIndex))
               .map((str) => (
@@ -307,14 +313,13 @@ export function InputWord() {
                     (e.currentTarget as HTMLButtonElement).blur()
                   }
                   tabIndex={-1}
-                  className="px-4 py-2 bg-white bg-opacity-70 rounded-lg transition leading-tight text-gray-700"
+                  className="px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 rounded-xl transition-all leading-tight text-white font-bold shadow-lg hover:shadow-xl transform hover:scale-110 border-2 border-blue-400 border-opacity-50"
                   style={{
                     WebkitTapHighlightColor: "transparent",
                     WebkitUserSelect: "none",
                     userSelect: "none",
                     outline: "none",
-                    boxShadow: "none",
-                    border: "none",
+                    boxShadow: "0 4px 15px rgba(59, 130, 246, 0.4)",
                   }}
                   onBlur={(e) => e.currentTarget.blur()}
                 >
@@ -322,19 +327,18 @@ export function InputWord() {
                 </button>
               ))}
           </div>
-          <div className="flex gap-4">
+          <div className="flex gap-6">
             <button
               ref={nextButtonRef}
               type="button"
               onClick={handleNext}
               onTouchEnd={(e) => (e.currentTarget as HTMLButtonElement).blur()}
-              className="bg-white text-gray-800 px-8 py-4 rounded-full transition transform hover:scale-105 font-semibold border-4 border-blue-200"
+              className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white px-8 py-4 rounded-full transition-all transform hover:scale-105 font-bold border-2 border-green-400 border-opacity-50 shadow-lg hover:shadow-xl"
               style={{
                 WebkitTapHighlightColor: "transparent",
                 WebkitUserSelect: "none",
                 userSelect: "none",
                 outline: "none",
-                boxShadow: "none",
               }}
               onBlur={(e) => e.currentTarget.blur()}
             >
@@ -345,13 +349,12 @@ export function InputWord() {
               onClick={handleShowAnswer}
               onTouchEnd={(e) => (e.currentTarget as HTMLButtonElement).blur()}
               tabIndex={-1}
-              className="bg-white text-gray-800 px-8 py-4 rounded-full transition transform hover:scale-105 font-semibold border-4 border-green-200"
+              className="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white px-8 py-4 rounded-full transition-all transform hover:scale-105 font-bold border-2 border-orange-400 border-opacity-50 shadow-lg hover:shadow-xl"
               style={{
                 WebkitTapHighlightColor: "transparent",
                 WebkitUserSelect: "none",
                 userSelect: "none",
                 outline: "none",
-                boxShadow: "none",
               }}
               onBlur={(e) => e.currentTarget.blur()}
             >
@@ -360,14 +363,14 @@ export function InputWord() {
           </div>
           {result && (
             <p
-              className={`mt-4 text-xl font-bold ${result === "正解！" ? "text-green-600" : "text-red-600"}`}
+              className={`mt-6 text-2xl font-bold ${result === "正解！" ? "text-green-400 drop-shadow-lg" : "text-red-400 drop-shadow-lg"}`}
             >
               {result}
             </p>
           )}
           {answer && (
             <p
-              className={`mt-4 text-lg font-bold text-purple-500 drop-shadow-md`}
+              className={`mt-4 text-lg font-bold text-purple-400 drop-shadow-md`}
             >
               {answer}
             </p>
