@@ -148,17 +148,18 @@ export function ConfigPage() {
   return (
     <div 
       style={{ 
-        padding: 20, 
-        paddingTop: 80,
+        padding: '1rem',
+        paddingTop: '5rem',
         minHeight: '100vh',
         background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 25%, #1e1b4b 50%, #0f172a 75%, #1e3a8a 100%)',
         backgroundAttachment: 'fixed',
       }}
+      className="max-w-6xl mx-auto sm:px-4 md:px-8"
     >
       <p className="text-2xl font-bold mb-8 text-center bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
         単語一覧を登録してください
       </p>
-      <div className="mb-6 flex gap-3">
+      <div className="mb-6 flex flex-wrap gap-3">
         <input
           type="file"
           accept=".json"
@@ -184,8 +185,8 @@ export function ConfigPage() {
       {data.length > 0 && (
         <div className="mb-8 p-6 bg-gradient-to-br from-blue-900 to-purple-900 bg-opacity-50 rounded-xl border border-blue-500 border-opacity-30 backdrop-blur-sm shadow-lg">
           <p className="text-xl font-bold mb-4 text-blue-300">出題範囲</p>
-          <div className="flex gap-4 items-center justify-between">
-            <div className="flex gap-4 items-center">
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-start sm:items-center">
               <div className="flex items-center gap-2">
                 <label htmlFor="range-start" className="text-blue-300 font-semibold">開始:</label>
                 <input
@@ -209,21 +210,21 @@ export function ConfigPage() {
                   className="w-20 bg-slate-800 border border-blue-400 border-opacity-30 rounded px-3 py-2 text-blue-300 placeholder-blue-600 focus:outline-none focus:border-blue-300 transition text-center font-semibold"
                 />
               </div>
-              <span className="text-blue-400 text-sm">
+              <span className="text-blue-400 text-sm whitespace-nowrap">
                 (1~{data.length}の範囲で入力)
               </span>
             </div>
             <button
               type="button"
               onClick={handleRangeSetting}
-              className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white px-6 py-2 rounded-full shadow-lg hover:shadow-xl transition transform hover:scale-105 font-bold border-2 border-cyan-400 border-opacity-50"
+              className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white px-6 py-2 rounded-full shadow-lg hover:shadow-xl transition transform hover:scale-105 font-bold border-2 border-cyan-400 border-opacity-50 w-full sm:w-auto"
             >
               設定
             </button>
           </div>
         </div>
       )}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {data.map((item) => (
           <div
             key={item.no}

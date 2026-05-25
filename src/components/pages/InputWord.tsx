@@ -299,10 +299,7 @@ export function InputWord() {
         backgroundAttachment: 'fixed',
       }}
     >
-      <h2 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent drop-shadow-lg">
-        {questionData ? "単語クイズ" : "データがありません"}
-      </h2>
-      {questionData && (
+      {!questionData ? "データがありません" : (
         <div className="flex flex-col items-center">
           <div className="bg-gradient-to-br from-blue-900 to-purple-900 bg-opacity-50 rounded-2xl p-6 mb-8 border border-blue-500 border-opacity-30 backdrop-blur-sm shadow-2xl">
             <div
@@ -333,9 +330,11 @@ export function InputWord() {
                   onTouchEnd={(e) =>
                     (e.currentTarget as HTMLButtonElement).blur()
                   }
+                  onFocus={(e) => (e.currentTarget as HTMLButtonElement).blur()}
                   tabIndex={-1}
-                  className="px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl leading-tight text-white font-bold shadow-lg border-2 border-blue-400 border-opacity-50"
+                  className="px-6 py-3 rounded-xl leading-tight text-white font-bold shadow-lg border-2 border-blue-400 border-opacity-50"
                   style={{
+                    background: "linear-gradient(to right, rgb(25, 75, 190), rgb(0, 130, 190))",
                     WebkitTapHighlightColor: "transparent",
                     WebkitUserSelect: "none",
                     userSelect: "none",

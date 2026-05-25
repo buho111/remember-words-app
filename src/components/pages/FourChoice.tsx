@@ -82,10 +82,7 @@ export function FourChoice() {
         backgroundAttachment: 'fixed',
       }}
     >
-      <h2 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent drop-shadow-lg">
-        {selectedItem ? "単語クイズ" : "データがありません"}
-      </h2>
-      {selectedItem && (
+      {!selectedItem ? "データがありません" : (
         <div className="flex flex-col items-center">
           <div className="bg-gradient-to-br from-blue-900 to-purple-900 bg-opacity-50 rounded-2xl p-6 mb-8 border border-blue-500 border-opacity-30 backdrop-blur-sm shadow-2xl">
             <div
