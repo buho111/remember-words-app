@@ -340,6 +340,7 @@ export function InputWord() {
                     userSelect: "none",
                     outline: "none",
                     boxShadow: "0 4px 15px rgba(59, 130, 246, 0.4)",
+                    transform: "none",
                   }}
                   onBlur={(e) => e.currentTarget.blur()}
                 >
