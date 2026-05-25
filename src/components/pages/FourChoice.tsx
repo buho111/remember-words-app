@@ -91,7 +91,7 @@ export function FourChoice() {
             <div
               style={{
                 width: 300,
-                height: 300,
+                height: 200,
                 overflow: "hidden",
                 borderRadius: "12px",
                 background: "rgba(15, 23, 42, 0.8)",

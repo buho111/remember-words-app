@@ -308,7 +308,7 @@ export function InputWord() {
             <div
               style={{
                 width: 300,
-                height: 300,
+                height: 200,
                 overflow: "hidden",
                 borderRadius: "12px",
                 background: "rgba(15, 23, 42, 0.8)",
@@ -334,7 +334,7 @@ export function InputWord() {
                     (e.currentTarget as HTMLButtonElement).blur()
                   }
                   tabIndex={-1}
-                  className="px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 rounded-xl transition-all leading-tight text-white font-bold shadow-lg hover:shadow-xl transform hover:scale-110 border-2 border-blue-400 border-opacity-50"
+                  className="px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl leading-tight text-white font-bold shadow-lg border-2 border-blue-400 border-opacity-50"
                   style={{
                     WebkitTapHighlightColor: "transparent",
                     WebkitUserSelect: "none",

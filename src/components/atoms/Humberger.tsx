@@ -12,7 +12,7 @@ export function Humberger() {
       <button
         onClick={handleMenuOpen}
         type="button"
-        className="z-10 space-y-2 p-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-full shadow-lg hover:shadow-xl transition border-2 border-blue-400 border-opacity-50 fixed top-4 right-4"
+        className="z-10 space-y-2 p-2 sm:p-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-full shadow-lg hover:shadow-xl transition border-2 border-blue-400 border-opacity-50 fixed top-2 sm:top-4 right-2 sm:right-4"
       >
         <div
           className={
